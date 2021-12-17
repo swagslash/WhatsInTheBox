@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc --build",
-    "start": "node ./dist/index.js"
+    "start-server": "node ./dist/index.js",
+    "start-client": "node ./dist/client.js"
   },
   "dependencies": {
     "express": "^4.17.2",
