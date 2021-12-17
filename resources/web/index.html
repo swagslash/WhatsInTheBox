@@ -1,0 +1,140 @@
+<html>
+<head>
+
+    <style>
+        /*#div1 {width:900px;height:900px;padding:10px;border:1px solid #aaaaaa;}*/
+
+        .draggable {
+            width: 90px;
+            height: 90px;
+        }
+
+        .dropzone {
+            width: 300px;
+            height: 200px;
+            margin: 50px;
+            position: relative;
+            background: lightgrey;
+            opacity: 50%;
+        }
+
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+
+    <script>
+
+        // this flag shows if the drop is already handled by boxes
+        var dropHandled = false;
+
+        function getMargin(elem) {
+            return parseInt(elem.css("marginTop").replace('px', ''));
+        }
+
+        function writeInfo(draggable, canvas, dropPosition) {
+            $("#info").html(
+                "&lt" + draggable.attr('id') + "&gt" +
+                " set to " + "&lt" + canvas.attr('id') + "&gt" +
+                " at absolute pos " + dropPosition.left + ", " + dropPosition.top
+            );
+        }
+
+        $(function () {
+            $(".draggable").draggable(
+                {
+                    // helper: "clone",
+                    cursor: "move",
+                }
+            );
+
+
+            $(".dropzone").droppable({
+                drop: function (event, ui) {
+                    var canvas = $(this);
+                    var dropzonePos = canvas.position();
+
+                    var dropPosition = {
+                        left: ui.draggable.offset().left,
+                        top: ui.draggable.offset().top // + dropzonePos.top //  + canvas.height() + getMargin(canvas)
+                    };
+
+                    // alert(
+                    //     dropzonePos.left + " " + dropzonePos.top + "\n" +
+                    //     ui.draggable.offset().left + " " + ui.draggable.offset().top + "\n" +
+                    //     dropPosition.left + " " + dropPosition.top
+                    // );
+
+                    var marker = $(".marker");
+                    marker.css({
+                        left: dropPosition.left,
+                        top: dropPosition.top,
+                        position: 'absolute',
+                        background: "red",
+                        zIndex: 10
+                    })
+
+                    dropHandled = true;
+                    writeInfo(ui.draggable, canvas, dropPosition)
+                }
+            });
+
+
+            $(".outside-dropzone").droppable({
+                drop: function (event, ui) {
+
+                    if (dropHandled) {
+                        dropHandled = false;
+                        return;
+                    }
+
+                    var canvas = $(this);
+
+                    var dropPosition = {
+                        left: -1,
+                        top: -1
+                    };
+
+                    // TODO dup code
+                    var marker = $(".marker");
+                    marker.css({
+                        left: dropPosition.left,
+                        top: dropPosition.top,
+                        position: 'absolute',
+                        background: "white",
+                        zIndex: 10
+                    })
+
+                    writeInfo(ui.draggable, canvas, dropPosition)
+                }
+            });
+
+        })
+
+    </script>
+</head>
+
+<body>
+
+<div id="unset" class="outside-dropzone">
+
+    <div id="box1" class="dropzone ui-widget-header"></div>
+    <div id="box2" class="dropzone ui-widget-header"></div>
+    <div id="box3" class="dropzone ui-widget-header"></div>
+
+    <div id="label1" class="draggable ui-widget-content">
+        <img src="https://www.imgacademy.com/themes/custom/imgacademy/images/helpbox-contact.jpg" width="150"/>
+    </div>
+    <div id="label2" class="draggable ui-widget-content">
+        <img src="https://media-cdn.tripadvisor.com/media/photo-s/15/a4/9b/77/legacy-hotel-at-img-academy.jpg" width="150"/>
+    </div>
+
+    <div class="marker"><h1>O</h1></div>
+
+    <div id="info"></div>
+
+</div>
+
+</body>
+
+</html>
