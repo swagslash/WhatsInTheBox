@@ -1,0 +1,134 @@
+<html>
+<head>
+
+    <style>
+        /*#div1 {width:900px;height:900px;padding:10px;border:1px solid #aaaaaa;}*/
+
+        .draggable {
+            width: 90px;
+            height: 90px;
+            /*padding: 0.5em;*/
+            /*float: left;*/
+            /*margin: 10px 10px 10px 0;*/
+        }
+
+        .dropzone {
+            width: 300px;
+            height: 200px;
+            /*padding: 0.5em;*/
+            /*float: left;*/
+            margin: 50px;
+            position: relative;
+            background: lightgrey;
+            opacity: 50%;
+        }
+
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+
+    <script>
+
+        function getMargin(elem){
+            return parseInt(elem.css("marginTop").replace('px', ''));
+        }
+
+        $(function (){
+            $(".draggable").draggable(
+                    {
+                    // helper: "clone",
+                    cursor: "move",
+                }
+            );
+
+
+        $(".dropzone").droppable({
+            drop: function(event, ui) {
+                var canvas = $(this);
+                // if (!ui.draggable.hasClass('object')) {
+                    // var canvasElement = ui.helper.clone();
+                    // var canvasElement = ui;
+                    // canvasElement.addClass('object');
+                    // canvas.find("div").removeClass('activeElement');
+                    // canvasElement.addClass('activeElement');
+                    // canvasElement.removeClass('draggable ui-draggable ui-draggable-handle ui-draggable-dragging');
+                    // canvas.append(canvasElement);
+
+                    var dropzonePos = canvas.position();
+
+                    var dropPosition = {
+                        left: ui.draggable.offset().left,
+                        top: ui.draggable.offset().top // + dropzonePos.top //  + canvas.height() + getMargin(canvas)
+                    };
+
+                    // alert(
+                    //     dropzonePos.left + " " + dropzonePos.top + "\n" +
+                    //     ui.draggable.offset().left + " " + ui.draggable.offset().top + "\n" +
+                    //     dropPosition.left + " " + dropPosition.top
+                    // );
+
+                    var marker = $(".marker");
+                    marker.css({
+                        left: dropPosition.left,
+                        top: dropPosition.top,
+                        position: 'absolute',
+                        background: "red",
+                        zIndex: 10
+                    })
+
+                    // canvasElement.css.left=dropPosition.left+20;
+                    // canvasElement.css.top=dropPosition.top;
+
+                    // canvasElement.css({
+                    //     left: dropPosition.left+500,
+                    //     top: dropPosition.top,
+                    //     position: 'absolute',
+                    //     zIndex: 10
+                    // });
+
+
+                    // canvasElement.draggable({
+                    //     cursor: 'move',
+                    //     containment: '#dropzone'
+                    // });
+                // }
+            }
+        });
+
+        })
+
+    </script>
+</head>
+
+<body>
+<!--    <div>-->
+<!--        <div id="elementId" draggable="true"><img src="https://www.imgacademy.com/themes/custom/imgacademy/images/helpbox-contact.jpg"></div>-->
+
+<!--        <div id="div1" background="green" ondrop="drop(event)" ondragover="allowDrop(event)"></div>-->
+<!--        <br>-->
+<!--        <img id="drag1" src="https://www.imgacademy.com/themes/custom/imgacademy/images/helpbox-contact.jpg" draggable="true" ondragstart="drag(event)" width="336" height="69">-->
+
+<!--        <div id="content">-->
+<!--            <div id="element">-->
+<!--            </div>-->
+
+
+
+            <div class="dropzone ui-widget-header"></div>
+            <div class="dropzone ui-widget-header"></div>
+            <div class="dropzone ui-widget-header"></div>
+<!--<div class="dropzone ui-widget-header"></div>-->
+
+            <div  class="draggable ui-widget-content">
+                <img id="drag1" src="https://www.imgacademy.com/themes/custom/imgacademy/images/helpbox-contact.jpg" width="150"/>
+            </div>
+
+            <div class="marker"><h1>O</h1></div>
+
+<!--        </div>-->
+
+<!--    </div>-->
+</body>
+
+</html>
