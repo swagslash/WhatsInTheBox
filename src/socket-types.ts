@@ -36,7 +36,7 @@ export interface ClientToServerEvents {
   joinRoom: (playerName: string, roomId: string) => void;
 
   // Lobby actions
-  startGame: (roomId: string) => void;
+  startGame: () => void;
 
   // Selection Phase
   boxesSelected: (boxes: Box[]) => void;

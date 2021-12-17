@@ -19,5 +19,5 @@ export interface Box {
 
 export interface Guess {
   playerId: string;       // Player that gave guess
-  boxes: string[][];      // Guess for box. [box-id][box-contents]
+  boxes: string[];      // Guess for box. [box-id][box-contents]
 }

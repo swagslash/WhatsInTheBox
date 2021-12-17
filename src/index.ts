@@ -46,6 +46,7 @@ io.on('connection', (socket) => {
     console.log('Player', player.name, 'created room', room.id);
 
     socket.emit('roomCreated', room);
+    socket.emit('updatePlayers', room);
   });
 
   socket.on('joinRoom', (playerName: string, roomId: string) => {
@@ -59,12 +60,18 @@ io.on('connection', (socket) => {
 
       socket.to(room.id).emit('updatePlayers', room);
       socket.emit('updatePlayers', room);
+    } else {
+      // Game has already started, no new players allowed
+      socket.emit('roomClosed');
     }
   });
 
   socket.on('startGame', () => {
     room.open = false;
     room.game = createOrGetGame(room);
+    console.log('SELECTING PHASE', room.id);
+
+    socket.emit('gameStarted', room.game);
     socket.to(room.id).emit('gameStarted', room.game);
 
     // TODO implement timeout for selection
@@ -75,9 +82,11 @@ io.on('connection', (socket) => {
 
   socket.on('boxesSelected', (boxes) => {
     // TODO clear timeout from 'startGame' step
-    console.log('boxes selected', boxes, 'by player', player.id);
+    // console.log('boxes selected by player', player.id);
     room.game.round.boxes = [...boxes];
+    console.log('GUESSING PHASE', room.id);
     socket.to(room.id).emit('guessBoxes', room.game.current);
+    socket.emit('guessBoxes', room.game.current);
 
     // TODO: start timeout for box selection
     // Calculate and update player scores
@@ -85,14 +94,21 @@ io.on('connection', (socket) => {
   });
 
   socket.on('boxesGuessed', (guess) => {
+    // console.log('Box guessed', player.id, guess);
     room.game.round.guesses.push(guess);
 
-    if (room.players.length === room.game.round.guesses.length) {
+
+    if ((room.players.length - 1) === room.game.round.guesses.length) {
       // All players gave their guesses
       // TODO: calculate and update player scores
 
+      console.log('GUESSING COMPLETE');
+
       setNextPlayer(room);
       socket.to(room.id).emit('reportScores', room.game);
+      socket.emit('reportScores', room.game);
+    } else {
+      console.log('GUESSING NOT COMPLETE', room.game.round.guesses.length);
     }
   });
 
@@ -105,10 +121,12 @@ io.on('connection', (socket) => {
         console.log('host disconnected', player.id, player.name);
         removeRoom(room.id);
         socket.to(room.id).emit('roomClosed');
+        socket.emit('roomClosed');
       } else {
         console.log('leave room', room.id);
         leaveRoom(room.id, playerId);
         socket.to(room.id).emit('updatePlayers', room);
+        socket.emit('updatePlayers', room);
       }
     }
   });

@@ -41,7 +41,7 @@ export const createRoom = (): Room => {
   return room;
 };
 
-export const joinRoom = (player: Player, roomId: string, asHost: boolean): Room => {
+export const joinRoom = (player: Player, roomId: string, asHost: boolean): Room | undefined => {
   const room = rooms.find((r) => r.id === roomId);
 
   if (room === undefined) {
