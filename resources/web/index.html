@@ -7,16 +7,11 @@
         .draggable {
             width: 90px;
             height: 90px;
-            /*padding: 0.5em;*/
-            /*float: left;*/
-            /*margin: 10px 10px 10px 0;*/
         }
 
         .dropzone {
             width: 300px;
             height: 200px;
-            /*padding: 0.5em;*/
-            /*float: left;*/
             margin: 50px;
             position: relative;
             background: lightgrey;
@@ -30,31 +25,33 @@
 
     <script>
 
-        function getMargin(elem){
+        // this flag shows if the drop is already handled by boxes
+        var dropHandled = false;
+
+        function getMargin(elem) {
             return parseInt(elem.css("marginTop").replace('px', ''));
         }
 
-        $(function (){
+        function writeInfo(draggable, canvas, dropPosition) {
+            $("#info").html(
+                "&lt" + draggable.attr('id') + "&gt" +
+                " set to " + "&lt" + canvas.attr('id') + "&gt" +
+                " at absolute pos " + dropPosition.left + ", " + dropPosition.top
+            );
+        }
+
+        $(function () {
             $(".draggable").draggable(
-                    {
+                {
                     // helper: "clone",
                     cursor: "move",
                 }
             );
 
 
-        $(".dropzone").droppable({
-            drop: function(event, ui) {
-                var canvas = $(this);
-                // if (!ui.draggable.hasClass('object')) {
-                    // var canvasElement = ui.helper.clone();
-                    // var canvasElement = ui;
-                    // canvasElement.addClass('object');
-                    // canvas.find("div").removeClass('activeElement');
-                    // canvasElement.addClass('activeElement');
-                    // canvasElement.removeClass('draggable ui-draggable ui-draggable-handle ui-draggable-dragging');
-                    // canvas.append(canvasElement);
-
+            $(".dropzone").droppable({
+                drop: function (event, ui) {
+                    var canvas = $(this);
                     var dropzonePos = canvas.position();
 
                     var dropPosition = {
@@ -77,24 +74,40 @@
                         zIndex: 10
                     })
 
-                    // canvasElement.css.left=dropPosition.left+20;
-                    // canvasElement.css.top=dropPosition.top;
-
-                    // canvasElement.css({
-                    //     left: dropPosition.left+500,
-                    //     top: dropPosition.top,
-                    //     position: 'absolute',
-                    //     zIndex: 10
-                    // });
+                    dropHandled = true;
+                    writeInfo(ui.draggable, canvas, dropPosition)
+                }
+            });
 
 
-                    // canvasElement.draggable({
-                    //     cursor: 'move',
-                    //     containment: '#dropzone'
-                    // });
-                // }
-            }
-        });
+            $(".outside-dropzone").droppable({
+                drop: function (event, ui) {
+
+                    if (dropHandled) {
+                        dropHandled = false;
+                        return;
+                    }
+
+                    var canvas = $(this);
+
+                    var dropPosition = {
+                        left: -1,
+                        top: -1
+                    };
+
+                    // TODO dup code
+                    var marker = $(".marker");
+                    marker.css({
+                        left: dropPosition.left,
+                        top: dropPosition.top,
+                        position: 'absolute',
+                        background: "white",
+                        zIndex: 10
+                    })
+
+                    writeInfo(ui.draggable, canvas, dropPosition)
+                }
+            });
 
         })
 
@@ -102,33 +115,26 @@
 </head>
 
 <body>
-<!--    <div>-->
-<!--        <div id="elementId" draggable="true"><img src="https://www.imgacademy.com/themes/custom/imgacademy/images/helpbox-contact.jpg"></div>-->
 
-<!--        <div id="div1" background="green" ondrop="drop(event)" ondragover="allowDrop(event)"></div>-->
-<!--        <br>-->
-<!--        <img id="drag1" src="https://www.imgacademy.com/themes/custom/imgacademy/images/helpbox-contact.jpg" draggable="true" ondragstart="drag(event)" width="336" height="69">-->
+<div id="unset" class="outside-dropzone">
 
-<!--        <div id="content">-->
-<!--            <div id="element">-->
-<!--            </div>-->
+    <div id="box1" class="dropzone ui-widget-header"></div>
+    <div id="box2" class="dropzone ui-widget-header"></div>
+    <div id="box3" class="dropzone ui-widget-header"></div>
 
+    <div id="label1" class="draggable ui-widget-content">
+        <img src="https://www.imgacademy.com/themes/custom/imgacademy/images/helpbox-contact.jpg" width="150"/>
+    </div>
+    <div id="label2" class="draggable ui-widget-content">
+        <img src="https://media-cdn.tripadvisor.com/media/photo-s/15/a4/9b/77/legacy-hotel-at-img-academy.jpg" width="150"/>
+    </div>
 
+    <div class="marker"><h1>O</h1></div>
 
-            <div class="dropzone ui-widget-header"></div>
-            <div class="dropzone ui-widget-header"></div>
-            <div class="dropzone ui-widget-header"></div>
-<!--<div class="dropzone ui-widget-header"></div>-->
+    <div id="info"></div>
 
-            <div  class="draggable ui-widget-content">
-                <img id="drag1" src="https://www.imgacademy.com/themes/custom/imgacademy/images/helpbox-contact.jpg" width="150"/>
-            </div>
+</div>
 
-            <div class="marker"><h1>O</h1></div>
-
-<!--        </div>-->
-
-<!--    </div>-->
 </body>
 
 </html>
