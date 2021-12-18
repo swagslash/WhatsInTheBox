@@ -2,84 +2,7 @@
 <head>
     <meta charset="UTF-8">
 
-    <!--    <link rel="stylesheet" href="https://shopify.github.io/draggable/examples/assets/css/examples-app.css?beta=12">-->
-
-    <style>
-
-        .float-left {
-            float: left;
-        }
-
-        .emoji-text {
-            position: relative;
-            /*top: -50%;*/
-        }
-
-
-        .draggable {
-            width: 25px;
-            height: 25px;
-            background: lightgreen;
-            /*position:absolute;*/
-        }
-
-        .dropzone {
-            width: 300px;
-            height: 200px;
-            margin: 50px;
-            /*position: relative;*/
-            background: lightgrey;
-            opacity: 50%;
-        }
-
-        .grid {
-            display: grid;
-            grid-template: 150px 150px 150px / 150px 150px 150px 150px;
-            grid-gap: 10px;
-            background-color: #ffffff;
-            padding: 10px;
-        }
-
-        .fancy-draggable {
-            background-color: #ff3946;
-            box-shadow: 10px 10px 10px #7777;
-        }
-
-        .fancy-draggable, .fancy-draggable.draggable-dropzone--occupied {
-            width: 100px;
-            height: 100px;
-        }
-
-        .fancy-droppable {
-            width: 100px;
-            height: 100px;
-            border: solid;
-            display: flex;
-        }
-
-        .center-box {
-            display: flex;
-            justify-content: center;
-        }
-
-        .table-box {
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .button {
-            background-color: #4CAF50; /* Green */
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-        }
-
-
-    </style>
+    <link rel="stylesheet" href="drag-labels.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
@@ -87,63 +10,11 @@
     <!-- this script allows drag&drop for .draggable into .dropzone -->
     <script src="drag-labels.js" defer="defer"></script>
 
-
     <!-- https://weeklyhow.com/shopify-draggable-tutorial/ -->
     <!-- https://github.com/Shopify/draggable/tree/master/src/Droppable -->
     <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.2/lib/draggable.min.js"></script>
     <!--    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/draggable.bundle.js"></script>-->
 
-    <script type="module">
-        const containers = document.querySelectorAll('.fancy-drop-container')
-
-        const droppable = new Draggable.Droppable(containers, {
-            draggable: '.fancy-draggable',
-            droppable: '.fancy-droppable'
-        });
-
-        // TODO drag and drop for the 5 items
-        //droppable.on('drag:start', (ev) => console.log(JSON.stringify(ev)));
-        //droppable.on('droppable:over', (ev) => console.log(JSON.stringify(ev)));
-        //droppable.on('droppable:dropped', (ev) => console.log(JSON.stringify(ev)));
-        // 'drag:over'
-        // draggable.on('droppable:out', () => console.log('droppable:out'));
-        //droppable.on('drag:over', (ev) => console.log(JSON.stringify(ev)));
-        //droppable.on('drag:over', (ev) => console.log(JSON.stringify(droppable.lastDropzone)));
-        //droppable.on('drag:stop', (ev) => console.log(JSON.stringify(ev)));
-
-        function dropped(ev) {
-            console.log(JSON.stringify(ev));
-            console.log(JSON.stringify(droppable.lastDropzone));
-
-            if (ev._canceled)
-                return;
-
-        }
-
-        $('#save').click(function () {
-            console.log("saving");
-            itemMap["box1"] = $('#box1-tag p:first')[0] == undefined ? undefined : $('#box1-tag p:first')[0].innerText
-            itemMap["box2"] = $('#box2-tag p:first')[0] == undefined ? undefined : $('#box2-tag p:first')[0].innerText
-            itemMap["box3"] = $('#box3-tag p:first')[0] == undefined ? undefined : $('#box3-tag p:first')[0].innerText
-            console.log(itemMap)
-        });
-    </script>
-
-
-    <script>
-        var itemMap = { // contains the 3 selected items
-            box1: null,
-            box2: null,
-            box3: null
-        };
-
-        var labelMap = { // contains the placed labels, max 3 per box
-            // stuff here is set in drag-labels.js
-            box1: [],
-            box2: [],
-            box3: []
-        };
-    </script>
 </head>
 
 <body>

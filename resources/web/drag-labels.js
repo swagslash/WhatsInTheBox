@@ -1,6 +1,42 @@
 // this flag shows if the drop is already handled by boxes
 var dropHandled = false;
 
+var itemMap = { // contains the 3 selected items
+    box1: null,
+    box2: null,
+    box3: null
+};
+
+var labelMap = { // contains the placed labels, max 3 per box
+    // stuff here is set in drag-labels.js
+    box1: [],
+    box2: [],
+    box3: []
+};
+
+const containers = document.querySelectorAll('.fancy-drop-container')
+
+const droppable = new Draggable.Droppable(containers, {
+    draggable: '.fancy-draggable',
+    droppable: '.fancy-droppable'
+});
+
+function dropped(ev) {
+    console.log(JSON.stringify(ev));
+    console.log(JSON.stringify(droppable.lastDropzone));
+
+    if (ev._canceled)
+        return;
+}
+
+$('#save').click(function () {
+    console.log("saving");
+    itemMap["box1"] = $('#box1-tag p:first')[0] == undefined ? undefined : $('#box1-tag p:first')[0].innerText
+    itemMap["box2"] = $('#box2-tag p:first')[0] == undefined ? undefined : $('#box2-tag p:first')[0].innerText
+    itemMap["box3"] = $('#box3-tag p:first')[0] == undefined ? undefined : $('#box3-tag p:first')[0].innerText
+    console.log(itemMap)
+});
+
 function getMargin(elem) {
     return parseInt(elem.css("marginTop").replace('px', ''));
 }
