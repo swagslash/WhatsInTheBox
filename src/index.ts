@@ -30,15 +30,25 @@ const SERVER_PORT = +(process.env.SERVER_PORT ?? 3_000);
 const app = express();
 const server = http.createServer(app);
 
+const start = async () => {
+  server.listen(3000, () => {
+    console.log('Listening at port ', SERVER_PORT);
+  });
+};
+
+start();
+
 app.get('/', (req, res) => {
   res.send('hello world');
 });
 
-server.listen(SERVER_PORT, () => {
-  console.log('App listening on', SERVER_PORT);
+const io = new Server<ClientToServerEvents, ServerToClientEvents, ServerToServerEvents, SocketData>(server, {
+  cors: {
+    origin: '*',
+    methods: ["GET", "POST"],
+    credentials: true
+  }
 });
-
-const io = new Server<ClientToServerEvents, ServerToClientEvents, ServerToServerEvents, SocketData>(server);
 
 io.on('connection', (socket) => {
   let room: Room | undefined = undefined;
