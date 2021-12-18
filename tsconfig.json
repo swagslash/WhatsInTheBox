@@ -8,6 +8,7 @@
     "declaration": true,
     "declarationMap": true,
     "allowSyntheticDefaultImports": true,
+    "noEmit": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "spec"]
