@@ -8,10 +8,10 @@ import {
   calculateScores,
   canGuess,
   canStartGuessing,
-  canStartSelection,
+  canStartSelection, clearGuessingTimeout, clearSelectionTimeout,
   createOrGetGame,
   setGamePhase,
-  setNextPlayer,
+  setNextPlayer, startGuessingTimeout, startSelectionTimeout,
 } from './server/core/game-manager';
 import {
   closeRoom,
@@ -26,8 +26,6 @@ import { SocketData } from './socket-data';
 import { ClientToServerEvents, ServerToClientEvents, ServerToServerEvents } from './socket-types';
 
 const SERVER_PORT = +(process.env.SERVER_PORT ?? 3_000);
-const SELECTION_TIMEOUT = +(process.env.SELECTION_TIMEOUT ?? 20_000); // 20 seconds
-const GUESSING_TIMEOUT = +(process.env.GUESSING_TIMEOUT ?? 20_000);
 
 const app = express();
 const server = http.createServer(app);
@@ -46,14 +44,12 @@ io.on('connection', (socket) => {
   let room: Room | undefined = undefined;
   let player: Player | undefined = undefined;
 
-  let selectionTimeout;
-  let guessingTimeout;
-
   console.log('[CONNECT]', socket.id);
 
   socket.on('createRoom', (playerName: string) => {
     if (room && player) {
       // Leave old room if player tries to create a new room
+      socket.leave(room.id);
       leaveRoom(room, player);
     }
 
@@ -69,6 +65,7 @@ io.on('connection', (socket) => {
   socket.on('joinRoom', (playerName: string, roomId: string) => {
     if (room && player) {
       // Leave old room if player tries to join a new room
+      socket.leave(room.id);
       leaveRoom(room, player);
     }
 
@@ -84,9 +81,11 @@ io.on('connection', (socket) => {
 
     if (success) {
       socket.join(room.id);
+      socket.emit('roomJoined', room);
+
       socket.to(room.id)
-        .emit('updatePlayers', room.players);
-      socket.emit('updatePlayers', room.players);
+        .emit('updatePlayers', room);
+      socket.emit('updatePlayers', room);
     } else {
       // Game is open, no new players allowed
       socket.emit('roomClosed');
@@ -113,14 +112,11 @@ io.on('connection', (socket) => {
       socket.to(room.id)
         .emit('gameStarted', room.game);
 
-      if (selectionTimeout) {
-        clearTimeout(selectionTimeout);
-      }
-
-      selectionTimeout = setTimeout(() => {
+      clearSelectionTimeout(room);
+      startSelectionTimeout(room, () => {
         console.log('[GAME][SELECTING TIMEOUT]', room.id);
         startNextRound();
-      }, SELECTION_TIMEOUT);
+      });
     }
   });
 
@@ -130,21 +126,16 @@ io.on('connection', (socket) => {
     }
 
     if (canStartGuessing(room)) {
-      if (selectionTimeout) {
-        clearTimeout(selectionTimeout);
-      }
 
-      if (guessingTimeout) {
-        clearTimeout(guessingTimeout);
-      }
-
-      guessingTimeout = setTimeout(() => {
+      clearSelectionTimeout(room);
+      clearGuessingTimeout(room);
+      startGuessingTimeout(room, () => {
         console.log('[GAME][GUESS TIMEOUT]', room.id);
         startNextRound();
-      }, GUESSING_TIMEOUT);
+      });
 
       setGamePhase(room, Phase.Guessing);
-      console.log('[GAME][BOXES]', room.id, player.id, boxes);
+      console.log('[GAME][BOXES]', room.id, player.name, boxes);
       room.game.round.boxes = boxes;
 
       socket.to(room.id)
@@ -159,16 +150,14 @@ io.on('connection', (socket) => {
     }
 
     if (canGuess(room)) {
-      console.log('[GAME][GUESS]', room.id, player.id, guess);
+      console.log('[GAME][GUESS]', room.id, player.name, guess.boxes);
       room.game.round.guesses.push(guess);
 
       const alreadyGuessed = room.game.round.guesses.length;
       const maxGuesses = room.players.length - 1;               // -1 for active player
 
       if (alreadyGuessed === maxGuesses) {
-        if (guessingTimeout) {
-          clearTimeout(guessingTimeout);
-        }
+        clearGuessingTimeout(room);
         startNextRound();
       } else {
         console.log('[GAME][GUESS MISSING]', room.id, maxGuesses - alreadyGuessed);
@@ -191,8 +180,8 @@ io.on('connection', (socket) => {
         leaveRoom(room, player);
 
         socket.to(room.id)
-          .emit('updatePlayers', room.players);
-        socket.emit('updatePlayers', room.players);
+          .emit('updatePlayers', room);
+        socket.emit('updatePlayers', room);
       }
     }
   });

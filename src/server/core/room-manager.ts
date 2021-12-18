@@ -24,7 +24,7 @@ export const createOrGetPlayer = (playerName: string, playerId: string): Player 
     players.push(player);
   }
 
-  console.log('[PLAYER][GET]', player.id, player.name);
+  console.log('[PLAYER][GET]', player.name);
 
   return player;
 };
@@ -32,7 +32,7 @@ export const createOrGetPlayer = (playerName: string, playerId: string): Player 
 export const removePlayer = (player: Player): void => {
   const index = players.findIndex((p) => p.id === player.id);
   if (index >= 0) {
-    console.log('[PLAYER][REMOVE]', player.id, player.name);
+    console.log('[PLAYER][REMOVE]', player.name);
     players.splice(index, 1);
   }
 };
@@ -52,7 +52,7 @@ export const getRoom = (roomId: string): Room | undefined => {
 };
 
 export const joinRoom = (room: Room, player: Player, asHost: boolean): boolean => {
-  console.log('[ROOM][JOIN]', room.id, player.id, player.name, asHost);
+  console.log('[ROOM][JOIN]', room.id, player.name, 'is host:', asHost);
 
   if (!room.open) {
     console.log('[ROOM][CLOSED]', room.id);
@@ -71,7 +71,7 @@ export const joinRoom = (room: Room, player: Player, asHost: boolean): boolean =
 export const leaveRoom = (room: Room, player: Player): void => {
   const index = room.players.findIndex((p) => p.id === player.id);
   if (index >= 0) {
-    console.log('[ROOM][LEAVE]', room.id, player.id, player.name);
+    console.log('[ROOM][LEAVE]', room.id, player.name);
     room.players.splice(index, 1);
   }
 

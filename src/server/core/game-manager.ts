@@ -1,5 +1,9 @@
 import { Game, Phase, Round } from '../../model/game';
 import { Room } from '../../model/room';
+import { timeouts } from './state';
+
+const SELECTION_TIMEOUT = +(process.env.SELECTION_TIMEOUT ?? 20_000); // 20 seconds
+const GUESSING_TIMEOUT = +(process.env.GUESSING_TIMEOUT ?? 20_000);
 
 /**
  * Creates a new game or get an existing one from given room.
@@ -15,6 +19,9 @@ export const createOrGetGame = (room: Room): Game => {
       phase: Phase.Selection,
       scores: {},
     };
+  } else {
+    room.game.phase = Phase.Lobby;
+    room.game.round = createRound();
   }
 
   return room.game;
@@ -47,7 +54,7 @@ export const setGamePhase = (room: Room, phase: Phase): void => {
 };
 
 export const canStartSelection = (room: Room): boolean => {
-  return [Phase.Lobby, Phase.Scoring].includes(room.game?.phase);
+  return room.game === undefined || [Phase.Lobby, Phase.Scoring].includes(room.game?.phase);
 };
 
 export const canStartGuessing = (room: Room): boolean => {
@@ -61,4 +68,37 @@ export const canGuess = (room: Room): boolean => {
 export const calculateScores = (room: Room): void => {
   // TODO
 };
+
+export const clearSelectionTimeout = (room: Room): void => {
+  if (timeouts[room.id]?.selectionTimeout) {
+    clearTimeout(timeouts[room.id].selectionTimeout);
+  }
+};
+
+export const clearGuessingTimeout = (room: Room): void => {
+  if (timeouts[room.id]?.guessingTimeout) {
+    clearTimeout(timeouts[room.id].guessingTimeout);
+  }
+};
+
+export const startSelectionTimeout = (room: Room, callback: () => void): void => {
+  clearSelectionTimeout(room);
+
+  if (!timeouts[room.id]) {
+    timeouts[room.id] = {};
+  }
+
+  timeouts[room.id].selectionTimeout = setTimeout(callback, SELECTION_TIMEOUT);
+};
+
+export const startGuessingTimeout = (room: Room, callback: () => void): void => {
+  clearGuessingTimeout(room);
+
+  if (!timeouts[room.id]) {
+    timeouts[room.id] = {};
+  }
+
+  timeouts[room.id].guessingTimeout = setTimeout(callback, GUESSING_TIMEOUT);
+};
+
 

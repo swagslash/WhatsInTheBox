@@ -6,7 +6,7 @@ export interface ServerToClientEvents {
   // Room actions
   roomCreated: (room: Room) => void;
   roomJoined: (room: Room) => void;
-  updatePlayers: (players: Player[]) => void;
+  updatePlayers: (room: Room) => void;
   roomClosed: () => void;
   roomNotFound: () => void;
 
