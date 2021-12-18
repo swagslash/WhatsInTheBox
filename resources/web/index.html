@@ -1,4 +1,4 @@
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
 
@@ -6,11 +6,11 @@
 
     <style>
 
-        .float-left{
+        .float-left {
             float: left;
         }
 
-        .emoji-text{
+        .emoji-text {
             position: relative;
             /*top: -50%;*/
         }
@@ -31,7 +31,6 @@
             background: lightgrey;
             opacity: 50%;
         }
-
 
         .grid {
             display: grid;
@@ -58,6 +57,27 @@
             display: flex;
         }
 
+        .center-box {
+            display: flex;
+            justify-content: center;
+        }
+
+        .table-box {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+
 
     </style>
 
@@ -70,7 +90,7 @@
 
     <!-- https://weeklyhow.com/shopify-draggable-tutorial/ -->
     <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.2/lib/draggable.min.js"></script>
-<!--    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/draggable.bundle.js"></script>-->
+    <!--    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/draggable.bundle.js"></script>-->
 
     <script type="module">
         const containers = document.querySelectorAll('.fancy-drop-container')
@@ -81,24 +101,31 @@
         });
 
         // TODO drag and drop for the 5 items
-        droppable.on('drag:start', (ev) => console.log(JSON.stringify(ev)));
-        droppable.on('droppable:over', (ev) => console.log(JSON.stringify(ev)));
-        droppable.on('droppable:dropped', (ev) => console.log(JSON.stringify(ev)));
+        //droppable.on('drag:start', (ev) => console.log(JSON.stringify(ev)));
+        //droppable.on('droppable:over', (ev) => console.log(JSON.stringify(ev)));
+        //droppable.on('droppable:dropped', (ev) => console.log(JSON.stringify(ev)));
         // 'drag:over'
         // draggable.on('droppable:out', () => console.log('droppable:out'));
-        droppable.on('drag:over', (ev) => console.log(JSON.stringify(ev)));
-        droppable.on('drag:over', (ev) => console.log(JSON.stringify(droppable.lastDropzone)));
-        droppable.on('drag:stop', (ev) => console.log(JSON.stringify(ev)));
+        //droppable.on('drag:over', (ev) => console.log(JSON.stringify(ev)));
+        //droppable.on('drag:over', (ev) => console.log(JSON.stringify(droppable.lastDropzone)));
+        //droppable.on('drag:stop', (ev) => console.log(JSON.stringify(ev)));
 
-        function dropped(ev){
+        function dropped(ev) {
             console.log(JSON.stringify(ev));
             console.log(JSON.stringify(droppable.lastDropzone));
 
-            if(ev._canceled)
+            if (ev._canceled)
                 return;
 
-
         }
+
+        $('#save').click(function () {
+            console.log("saving");
+            itemMap["box1"] = $('#box1-tag p:first')[0] == undefined ? undefined : $('#box1-tag p:first')[0].innerText
+            itemMap["box2"] = $('#box2-tag p:first')[0] == undefined ? undefined : $('#box2-tag p:first')[0].innerText
+            itemMap["box3"] = $('#box3-tag p:first')[0] == undefined ? undefined : $('#box3-tag p:first')[0].innerText
+            console.log(itemMap)
+        });
     </script>
 
 
@@ -121,12 +148,16 @@
 <body>
 
 <div id="unset" class="outside-dropzone">
+    <div class="center-box">
+        <h1>What's in the box?</h1>
+    </div>
+    <div class="center-box">
+        <p>Place three of the items in the boxes. </p>
+    </div>
 
-    <h1>What's in the box?</h1>
-    <p>Place three of the items in the boxes. </p>
 
     <!-- contains all the items for placement -->
-    <div class="fancy-drop-container">
+    <div class="fancy-drop-container center-box">
         <div class="fancy-droppable draggable-dropzone--occupied float-left">
             <div class="fancy-draggable">
                 <p style="position: relative; top: -20%; text-align: center; font-size: 40">🤮</p>
@@ -154,23 +185,25 @@
         </div>
     </div>
 
+
     <!-- Using table because float is not working with drag&drop ootb -->
-    <table>
+
+    <table class="table-box">
         <tr>
             <td>
-                <div id="box1-tag" class="fancy-drop-container">
+                <div id="box1-tag" class="fancy-drop-container center-box">
                     <div class="fancy-droppable"></div>
                 </div>
             </td>
 
             <td>
-                <div id="box2-tag" class="fancy-drop-container">
+                <div id="box2-tag" class="fancy-drop-container center-box">
                     <div class="fancy-droppable"></div>
                 </div>
             </td>
 
             <td>
-                <div  class="fancy-drop-container">
+                <div class="fancy-drop-container center-box">
                     <div id="box3-tag" class="fancy-droppable"></div>
                 </div>
             </td>
@@ -188,37 +221,51 @@
         </tr>
     </table>
 
+    <div class="center-box">
+        <button id="save" class="button">Save</button>
+    </div>
 
-    <p> Then, apply stickers as hints for the unboxing. </p>
+    <div class="center-box">
+        <p> Then, apply stickers as hints for the unboxing. </p>
+    </div>
+
     <!-- TODO create containment for the drag&drop -->
-    <div>
-    <div id="😄" class="draggable ui-widget-content">
-        <p class="emoji-text">😄</p>
-    </div>
-    </div>
-    <div>
-    <div id="😂" class="draggable ui-widget-content">
-        <p class="emoji-text">😂</p>
-    </div>
-    </div>
-    <div>
-    <div id="😍" class="draggable ui-widget-content">
-        <p class="emoji-text">😍</p>
-    </div>
-    </div>
-    <div>
-    <div id="😏" class="draggable ui-widget-content">
-        <p class="emoji-text">😏</p>
-    </div>
-    </div>
-    <div>
-    <div id="🤤" class="draggable ui-widget-content">
-        <p class="emoji-text">🤤</p>
+    <div class="center-box">
+        <div>
+            <div id="😄" class="draggable ui-widget-content">
+                <p class="emoji-text">😄</p>
+            </div>
+        </div>
+        <div>
+            <div id="😂" class="draggable ui-widget-content">
+                <p class="emoji-text">😂</p>
+            </div>
+        </div>
+        <div>
+            <div id="😍" class="draggable ui-widget-content">
+                <p class="emoji-text">😍</p>
+            </div>
+        </div>
+        <div>
+            <div id="😏" class="draggable ui-widget-content">
+                <p class="emoji-text">😏</p>
+            </div>
+        </div>
+        <div>
+            <div id="🤤" class="draggable ui-widget-content">
+                <p class="emoji-text">🤤</p>
+            </div>
+        </div>
     </div>
 
-    <div class="marker" style="height: 10px; width: 10px"></div>
 
-    <div id="info"></div>
+    <div class="marker" style="height: 10px; width: 10px">
+
+    </div>
+
+    <div id="info">
+
+    </div>
 
 
 </div>
