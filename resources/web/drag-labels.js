@@ -28,6 +28,7 @@ function storeLabelPlacement(draggable, canvas, dropPosition) {
     // );
     // return;
 
+
     if (draggable.attr('placement') != null)
         var oldPlacement = JSON.parse(draggable.attr('placement'));
     else
@@ -46,9 +47,13 @@ function storeLabelPlacement(draggable, canvas, dropPosition) {
         return;
     }
 
-    if (oldPlacement != null)
+    if (oldPlacement != null) {
         // remove old placement
         labelMap[oldPlacement.box] = labelMap[oldPlacement.box].filter((value, index, arr) => value.label != oldPlacement.label);
+
+        if(canvas.attr('id') == 'unset')
+            draggable.attr('placement', null);
+    }
 
     if (canvas.attr('id') != 'unset') {
         var newPlacement = {
