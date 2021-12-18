@@ -46,8 +46,8 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents, ServerToServer
   cors: {
     origin: '*',
     methods: ["GET", "POST"],
-    credentials: true
-  }
+    credentials: true,
+  },
 });
 
 io.on('connection', (socket) => {

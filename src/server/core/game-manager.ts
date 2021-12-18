@@ -3,8 +3,8 @@ import { Game, Phase, Round } from '../../model/game';
 import { Room } from '../../model/room';
 import { timeouts } from './state';
 
-const SELECTION_TIMEOUT = +(process.env.SELECTION_TIMEOUT ?? 20_000); // 20 seconds
-const GUESSING_TIMEOUT = +(process.env.GUESSING_TIMEOUT ?? 20_000);
+const SELECTION_TIMEOUT = +(process.env.SELECTION_TIMEOUT ?? 60_000); // 60 seconds
+const GUESSING_TIMEOUT = +(process.env.GUESSING_TIMEOUT ?? 60_000);
 
 /**
  * Creates a new game or get an existing one from given room.
@@ -68,6 +68,10 @@ export const canGuess = (room: Room): boolean => {
 };
 
 export const calculateScores = (room: Room): void => {
+  if (!room.game.round.boxes || !room.game.round.guesses) {
+    return;
+  }
+
   const playerBoxes = room.game.round.boxes.map((b) => b.content);
   const guesses = room.game.round.guesses;
 
