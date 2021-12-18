@@ -141,8 +141,8 @@ io.on('connection', (socket) => {
       room.game.round.boxes = boxes;
 
       socket.to(room.id)
-        .emit('guessBoxes', room.game.current);
-      socket.emit('guessBoxes', room.game.current);
+        .emit('guessBoxes', room.game);
+      socket.emit('guessBoxes', room.game);
     }
   });
 
@@ -192,9 +192,9 @@ io.on('connection', (socket) => {
   });
 
   const startNextRound = () => {
+    calculateScores(room);
     setNextPlayer(room);
     setGamePhase(room, Phase.Scoring);
-    calculateScores(room);
 
     socket.to(room.id)
       .emit('reportScores', room.game);

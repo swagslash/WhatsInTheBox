@@ -1,5 +1,4 @@
 import { Box, Game, Guess } from './model/game';
-import { Player } from './model/player';
 import { Room } from './model/room';
 
 export interface ServerToClientEvents {
@@ -21,7 +20,7 @@ export interface ServerToClientEvents {
    * Instructs other players to select boxes
    * @param payload
    */
-  guessBoxes: (currentPlayer: Player) => void;
+  guessBoxes: (game: Game) => void;
 
 
   // Scoring Phase

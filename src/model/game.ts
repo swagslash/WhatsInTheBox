@@ -16,7 +16,12 @@ export interface Round {
 
 export interface Box {
   content: string;        // Content of box
-  labels: string[];       // Labels of box
+  labels: Label[];        // Labels of box
+}
+
+export interface Label {
+  label: string;
+  position: { x: number, y: number };
 }
 
 export interface Guess {

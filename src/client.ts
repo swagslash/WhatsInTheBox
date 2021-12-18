@@ -43,14 +43,6 @@ socket.on('updatePlayers', (room) => {
   if (myRoom.players.length === 3 && myRoom.host.id === playerId) {
     console.log('I will start the next game in 5 seconds');
     socket.emit('startGame');
-
-    setTimeout(() => {
-      socket.emit('selectBoxes', [
-        { content: 'A', labels: ['X', 'Y']},
-        { content: 'B', labels: ['X', 'Y']},
-        { content: 'C', labels: ['X', 'Y']},
-      ])
-    }, 5_000);
   }
 });
 
@@ -60,19 +52,62 @@ socket.on('roomClosed', () => {
 
 socket.on('gameStarted', (game) => {
   myGame = game;
-  console.log('Host started game');
+  console.log('Game Started');
+  if (game.current.id === playerId) {
+    console.log('Select from', game.round.contentPool);
+    console.log('Assign labels from', game.round.labelPool);
+
+    setTimeout(() => {
+      const {contentPool, labelPool} = game.round;
+      socket.emit('selectBoxes', [
+        {
+          content: contentPool[0],
+          labels: [{label: labelPool[0], position: {x: 0, y: 0}}, {label: labelPool[1], position: {x: 0, y: 0}}],
+        },
+        {
+          content: contentPool[1],
+          labels: [{label: labelPool[0], position: {x: 0, y: 0}}, {label: labelPool[1], position: {x: 0, y: 0}}],
+        },
+        {
+          content: contentPool[2],
+          labels: [{label: labelPool[0], position: {x: 0, y: 0}}, {label: labelPool[1], position: {x: 0, y: 0}}],
+        },
+      ]);
+    }, 5_000);
+  } else {
+    console.log(game.current.name, 'is packing', game.round.contentPool);
+  }
 });
 
-socket.on('guessBoxes', (currentPlayer) => {
-  if (playerId === currentPlayer.id) {
+socket.on('guessBoxes', (game) => {
+  myGame = game;
+  if (playerId === game.current.id) {
     console.log('I wait for other guesses');
   } else {
     const timeout = Math.ceil(Math.random() * 5000);
     console.log('I give my guess', playerId, timeout);
     setTimeout(() => {
-      socket.emit('guessBoxes', { playerId, boxes: [
-          'C', 'A', 'Q',
-        ]});
+      const {contentPool} = myGame.round;
+      const rand = Math.random();
+      if (rand < 0.1) {
+        socket.emit('guessBoxes', {
+          playerId, boxes: [
+            contentPool[0], contentPool[1], contentPool[2],
+          ],
+        });
+      } else if (rand < 0.6) {
+        socket.emit('guessBoxes', {
+          playerId, boxes: [
+            contentPool[3], contentPool[4], contentPool[2],
+          ],
+        });
+      } else {
+        socket.emit('guessBoxes', {
+          playerId, boxes: [
+            contentPool[0], contentPool[4], contentPool[2],
+          ],
+        });
+      }
     }, timeout);
   }
 });
@@ -80,17 +115,10 @@ socket.on('guessBoxes', (currentPlayer) => {
 socket.on('reportScores', (game) => {
   console.log('Game finished:', game.scores);
   console.log('next player', game.current.name, game.current.id);
+  console.log('\n\n');
 
   if (game.current.id === playerId) {
-    console.log('I will start the next game');
+    console.log('I will start the next game in 5 seconds');
     socket.emit('startGame');
-
-    setTimeout(() => {
-      socket.emit('selectBoxes', [
-        { content: 'A', labels: ['X', 'Y']},
-        { content: 'B', labels: ['X', 'Y']},
-        { content: 'C', labels: ['X', 'Y']},
-      ])
-    }, 5_000);
   }
 });

@@ -1,3 +1,4 @@
+import { getRandomEmojis } from '../../emojis';
 import { Game, Phase, Round } from '../../model/game';
 import { Room } from '../../model/room';
 import { timeouts } from './state';
@@ -40,10 +41,11 @@ export const setNextPlayer = (room: Room): void => {
 };
 
 const createRound = (): Round => {
+  const emojis = getRandomEmojis(30);
   return {
     boxes: [],
-    contentPool: ['1', '2', '3', '4', '5'], // Items that can be placed in boxes | TODO generate
-    labelPool: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'], // Labels that can be assigned to boxes | TODO generate
+    contentPool: emojis.splice(0, 5), // Items that can be placed in boxes
+    labelPool: emojis,                                // Labels that can be assigned to boxes
     guesses: [],
   };
 };
@@ -66,7 +68,24 @@ export const canGuess = (room: Room): boolean => {
 };
 
 export const calculateScores = (room: Room): void => {
-  // TODO
+  const playerBoxes = room.game.round.boxes.map((b) => b.content);
+  const guesses = room.game.round.guesses;
+
+  for (const { playerId, boxes } of guesses) {
+    let score = 0;
+
+    for (let i = 0; i < 3; i++) {             // Note: Always 3 boxes
+      if (playerBoxes[i] === boxes[i]) {
+        score++;
+      }
+    }
+
+    if (score === 3) {
+      score = 5;                              // 2 Extra points for correctly guessed boxes.
+    }
+
+    room.game.scores[playerId] = (room.game.scores[playerId] ?? 0) + score;
+  }
 };
 
 export const clearSelectionTimeout = (room: Room): void => {
