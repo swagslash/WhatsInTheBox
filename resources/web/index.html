@@ -1,116 +1,120 @@
 <html>
 <head>
+    <meta charset="UTF-8">
+
+    <!--    <link rel="stylesheet" href="https://shopify.github.io/draggable/examples/assets/css/examples-app.css?beta=12">-->
 
     <style>
-        /*#div1 {width:900px;height:900px;padding:10px;border:1px solid #aaaaaa;}*/
+
+        .float-left{
+            float: left;
+        }
+
+        .emoji-text{
+            position: relative;
+            /*top: -50%;*/
+        }
+
 
         .draggable {
-            width: 90px;
-            height: 90px;
+            width: 25px;
+            height: 25px;
+            background: lightgreen;
+            /*position:absolute;*/
         }
 
         .dropzone {
             width: 300px;
             height: 200px;
             margin: 50px;
-            position: relative;
+            /*position: relative;*/
             background: lightgrey;
             opacity: 50%;
         }
+
+
+        .grid {
+            display: grid;
+            grid-template: 150px 150px 150px / 150px 150px 150px 150px;
+            grid-gap: 10px;
+            background-color: #ffffff;
+            padding: 10px;
+        }
+
+        .fancy-draggable {
+            background-color: #ff3946;
+            box-shadow: 10px 10px 10px #7777;
+        }
+
+        .fancy-draggable, .fancy-draggable.draggable-dropzone--occupied {
+            width: 100px;
+            height: 100px;
+        }
+
+        .fancy-droppable {
+            width: 100px;
+            height: 100px;
+            border: solid;
+            display: flex;
+        }
+
 
     </style>
 
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
 
+    <!-- this script allows drag&drop for .draggable into .dropzone -->
+    <script src="drag-labels.js" defer="defer"></script>
+
+
+    <!-- https://weeklyhow.com/shopify-draggable-tutorial/ -->
+    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.2/lib/draggable.min.js"></script>
+<!--    <script src="https://cdn.jsdelivr.net/npm/@shopify/draggable@1.0.0-beta.11/lib/draggable.bundle.js"></script>-->
+
+    <script type="module">
+        const containers = document.querySelectorAll('.fancy-drop-container')
+
+        const droppable = new Draggable.Droppable(containers, {
+            draggable: '.fancy-draggable',
+            droppable: '.fancy-droppable'
+        });
+
+        // TODO drag and drop for the 5 items
+        droppable.on('drag:start', (ev) => console.log(JSON.stringify(ev)));
+        droppable.on('droppable:over', (ev) => console.log(JSON.stringify(ev)));
+        droppable.on('droppable:dropped', (ev) => console.log(JSON.stringify(ev)));
+        // 'drag:over'
+        // draggable.on('droppable:out', () => console.log('droppable:out'));
+        droppable.on('drag:over', (ev) => console.log(JSON.stringify(ev)));
+        droppable.on('drag:over', (ev) => console.log(JSON.stringify(droppable.lastDropzone)));
+        droppable.on('drag:stop', (ev) => console.log(JSON.stringify(ev)));
+
+        function dropped(ev){
+            console.log(JSON.stringify(ev));
+            console.log(JSON.stringify(droppable.lastDropzone));
+
+            if(ev._canceled)
+                return;
+
+
+        }
+    </script>
+
+
     <script>
+        var itemMap = { // contains the 3 selected items
+            box1: null,
+            box2: null,
+            box3: null
+        };
 
-        // this flag shows if the drop is already handled by boxes
-        var dropHandled = false;
-
-        function getMargin(elem) {
-            return parseInt(elem.css("marginTop").replace('px', ''));
-        }
-
-        function writeInfo(draggable, canvas, dropPosition) {
-            $("#info").html(
-                "&lt" + draggable.attr('id') + "&gt" +
-                " set to " + "&lt" + canvas.attr('id') + "&gt" +
-                " at absolute pos " + dropPosition.left + ", " + dropPosition.top
-            );
-        }
-
-        $(function () {
-            $(".draggable").draggable(
-                {
-                    // helper: "clone",
-                    cursor: "move",
-                }
-            );
-
-
-            $(".dropzone").droppable({
-                drop: function (event, ui) {
-                    var canvas = $(this);
-                    var dropzonePos = canvas.position();
-
-                    var dropPosition = {
-                        left: ui.draggable.offset().left,
-                        top: ui.draggable.offset().top // + dropzonePos.top //  + canvas.height() + getMargin(canvas)
-                    };
-
-                    // alert(
-                    //     dropzonePos.left + " " + dropzonePos.top + "\n" +
-                    //     ui.draggable.offset().left + " " + ui.draggable.offset().top + "\n" +
-                    //     dropPosition.left + " " + dropPosition.top
-                    // );
-
-                    var marker = $(".marker");
-                    marker.css({
-                        left: dropPosition.left,
-                        top: dropPosition.top,
-                        position: 'absolute',
-                        background: "red",
-                        zIndex: 10
-                    })
-
-                    dropHandled = true;
-                    writeInfo(ui.draggable, canvas, dropPosition)
-                }
-            });
-
-
-            $(".outside-dropzone").droppable({
-                drop: function (event, ui) {
-
-                    if (dropHandled) {
-                        dropHandled = false;
-                        return;
-                    }
-
-                    var canvas = $(this);
-
-                    var dropPosition = {
-                        left: -1,
-                        top: -1
-                    };
-
-                    // TODO dup code
-                    var marker = $(".marker");
-                    marker.css({
-                        left: dropPosition.left,
-                        top: dropPosition.top,
-                        position: 'absolute',
-                        background: "white",
-                        zIndex: 10
-                    })
-
-                    writeInfo(ui.draggable, canvas, dropPosition)
-                }
-            });
-
-        })
-
+        var labelMap = { // contains the placed labels, max 3 per box
+            // stuff here is set in drag-labels.js
+            box1: [],
+            box2: [],
+            box3: []
+        };
     </script>
 </head>
 
@@ -118,20 +122,104 @@
 
 <div id="unset" class="outside-dropzone">
 
-    <div id="box1" class="dropzone ui-widget-header"></div>
-    <div id="box2" class="dropzone ui-widget-header"></div>
-    <div id="box3" class="dropzone ui-widget-header"></div>
+    <h1>What's in the box?</h1>
+    <p>Place three of the items in the boxes. </p>
 
-    <div id="label1" class="draggable ui-widget-content">
-        <img src="https://www.imgacademy.com/themes/custom/imgacademy/images/helpbox-contact.jpg" width="150"/>
-    </div>
-    <div id="label2" class="draggable ui-widget-content">
-        <img src="https://media-cdn.tripadvisor.com/media/photo-s/15/a4/9b/77/legacy-hotel-at-img-academy.jpg" width="150"/>
+    <!-- contains all the items for placement -->
+    <div class="fancy-drop-container">
+        <div class="fancy-droppable draggable-dropzone--occupied float-left">
+            <div class="fancy-draggable">
+                <p style="position: relative; top: -20%; text-align: center; font-size: 40">🤮</p>
+            </div>
+        </div>
+        <div class="fancy-droppable draggable-dropzone--occupied float-left">
+            <div class="fancy-draggable">
+                <p style="position: relative; top: -20%; text-align: center; font-size: 40">😴</p>
+            </div>
+        </div>
+        <div class="fancy-droppable draggable-dropzone--occupied float-left">
+            <div class="fancy-draggable">
+                <p style="position: relative; top: -20%; text-align: center; font-size: 40">🤑</p>
+            </div>
+        </div>
+        <div class="fancy-droppable draggable-dropzone--occupied float-left">
+            <div class="fancy-draggable">
+                <p style="position: relative; top: -20%; text-align: center; font-size: 40">🤬</p>
+            </div>
+        </div>
+        <div class="fancy-droppable draggable-dropzone--occupied float-left">
+            <div class="fancy-draggable">
+                <p style="position: relative; top: -20%; text-align: center; font-size: 40">💩</p>
+            </div>
+        </div>
     </div>
 
-    <div class="marker"><h1>O</h1></div>
+    <!-- Using table because float is not working with drag&drop ootb -->
+    <table>
+        <tr>
+            <td>
+                <div id="box1-tag" class="fancy-drop-container">
+                    <div class="fancy-droppable"></div>
+                </div>
+            </td>
+
+            <td>
+                <div id="box2-tag" class="fancy-drop-container">
+                    <div class="fancy-droppable"></div>
+                </div>
+            </td>
+
+            <td>
+                <div  class="fancy-drop-container">
+                    <div id="box3-tag" class="fancy-droppable"></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div id="box1" class="dropzone ui-widget-header"></div>
+            </td>
+            <td>
+                <div id="box2" class="dropzone ui-widget-header"></div>
+            </td>
+            <td>
+                <div id="box3" class="dropzone ui-widget-header"></div>
+            </td>
+        </tr>
+    </table>
+
+
+    <p> Then, apply stickers as hints for the unboxing. </p>
+    <!-- TODO create containment for the drag&drop -->
+    <div>
+    <div id="😄" class="draggable ui-widget-content">
+        <p class="emoji-text">😄</p>
+    </div>
+    </div>
+    <div>
+    <div id="😂" class="draggable ui-widget-content">
+        <p class="emoji-text">😂</p>
+    </div>
+    </div>
+    <div>
+    <div id="😍" class="draggable ui-widget-content">
+        <p class="emoji-text">😍</p>
+    </div>
+    </div>
+    <div>
+    <div id="😏" class="draggable ui-widget-content">
+        <p class="emoji-text">😏</p>
+    </div>
+    </div>
+    <div>
+    <div id="🤤" class="draggable ui-widget-content">
+        <p class="emoji-text">🤤</p>
+    </div>
+
+    <div class="marker" style="height: 10px; width: 10px"></div>
 
     <div id="info"></div>
+
 
 </div>
 
