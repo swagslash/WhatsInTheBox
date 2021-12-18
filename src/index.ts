@@ -106,6 +106,8 @@ io.on('connection', (socket) => {
         return;
       }
 
+      console.log('guesses', room.game.round.guesses);
+
       setGamePhase(room, Phase.Selection);
 
       socket.emit('gameStarted', room.game);
@@ -150,11 +152,14 @@ io.on('connection', (socket) => {
     }
 
     if (canGuess(room)) {
-      console.log('[GAME][GUESS]', room.id, player.name, guess.boxes);
+      console.log('[GAME][GUESS]', room.id, player.name);
       room.game.round.guesses.push(guess);
 
       const alreadyGuessed = room.game.round.guesses.length;
       const maxGuesses = room.players.length - 1;               // -1 for active player
+
+      console.log('already guessed', alreadyGuessed);
+      console.log('players to guess', room.players.length - 1);
 
       if (alreadyGuessed === maxGuesses) {
         clearGuessingTimeout(room);
