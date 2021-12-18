@@ -5,8 +5,10 @@ import { Room } from './model/room';
 export interface ServerToClientEvents {
   // Room actions
   roomCreated: (room: Room) => void;
-  updatePlayers: (room: Room) => void;
-  roomClosed: () => void; // Host disconnected
+  roomJoined: (room: Room) => void;
+  updatePlayers: (players: Player[]) => void;
+  roomClosed: () => void;
+  roomNotFound: () => void;
 
   // Selection Phase
   /**
@@ -34,15 +36,16 @@ export interface ClientToServerEvents {
   // Room actions
   createRoom: (playerName: string) => void;
   joinRoom: (playerName: string, roomId: string) => void;
+  leaveRoom: () => void;
 
   // Lobby actions
   startGame: () => void;
 
   // Selection Phase
-  boxesSelected: (boxes: Box[]) => void;
+  selectBoxes: (boxes: Box[]) => void;
 
   // Guessing Phase
-  boxesGuessed: (guesses: Guess) => void;
+  guessBoxes: (guesses: Guess) => void;
 
   // Scoring Phase
 

@@ -3,8 +3,8 @@ import { Player } from './player';
 
 export interface Room {
   id: string;
-  players: Player[];
-  host?: Player;
-  open: boolean;
   game?: Game;
+  host?: Player;
+  players: Player[];
+  open: boolean;
 }

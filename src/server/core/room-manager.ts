@@ -3,12 +3,12 @@ import { Room } from '../../model/room';
 import { players, rooms } from './state';
 
 const generateRoomName = (): string => {
-  return Math.random().toString(16).split('').splice(-5).join('');
+  return Math.random()
+    .toString(16)
+    .split('')
+    .splice(-5)
+    .join('');
 };
-
-export const getPlayer = (playerId: string): Player | undefined => {
-  return players.find((p) => p.id === playerId);
-}
 
 /**
  * Creates a new player or gets a new player
@@ -19,82 +19,75 @@ export const createOrGetPlayer = (playerName: string, playerId: string): Player 
   let player = players.find((p) => p.id === playerId);
 
   if (player === undefined) {
-    player = { id: playerId, name: playerName, score: 0, isHost: false};
+    console.log('[PLAYER][CREATE]', playerId, playerName);
+    player = {id: playerId, name: playerName};
     players.push(player);
   }
+
+  console.log('[PLAYER][GET]', player.id, player.name);
 
   return player;
 };
 
-export const removePlayer = (id: string): void => {
-  const index = players.findIndex((p) => p.id === id);
+export const removePlayer = (player: Player): void => {
+  const index = players.findIndex((p) => p.id === player.id);
   if (index >= 0) {
+    console.log('[PLAYER][REMOVE]', player.id, player.name);
     players.splice(index, 1);
   }
-}
+};
 
 export const createRoom = (): Room => {
   const id = generateRoomName();
-  const room: Room = { id, open: true, players: []};
+  const room: Room = {id, open: true, players: []};
   rooms.push(room);
+
+  console.log('[ROOM][CREATE]', room.id);
 
   return room;
 };
 
-export const joinRoom = (player: Player, roomId: string, asHost: boolean): Room | undefined => {
-  const room = rooms.find((r) => r.id === roomId);
+export const getRoom = (roomId: string): Room | undefined => {
+  return rooms.find((r) => r.id === roomId);
+};
 
-  if (room === undefined) {
-    return undefined;
+export const joinRoom = (room: Room, player: Player, asHost: boolean): boolean => {
+  console.log('[ROOM][JOIN]', room.id, player.id, player.name, asHost);
+
+  if (!room.open) {
+    console.log('[ROOM][CLOSED]', room.id);
+    return false;
   }
 
-  if (room.players.length >= 10) {
-    return undefined;
-  }
-
-  player.roomId = roomId;
-  player.isHost = asHost;
   room.players.push(player);
 
   if (asHost) {
     room.host = player;
   }
 
-  return room;
+  return true;
 };
 
-export const leaveRoom = (roomId: string, playerId: string): boolean => {
-  const room = rooms.find((r) => r.id === roomId);
-
-  if (room === undefined) {
-    return false;
-  }
-
-  const player = players.find((p) => p.id === playerId);
-  if (player !== undefined) {
-    player.roomId = undefined;
-    player.isHost = false;
-  }
-
-  const index = room.players.findIndex((p) => p.id === playerId);
+export const leaveRoom = (room: Room, player: Player): void => {
+  const index = room.players.findIndex((p) => p.id === player.id);
   if (index >= 0) {
+    console.log('[ROOM][LEAVE]', room.id, player.id, player.name);
     room.players.splice(index, 1);
   }
 
   if (room.players.length === 0) {
-    console.log('remove empty room', room.id);
-    removeRoom(roomId);
+    closeRoom(room);
   }
 };
 
-export const removeRoom = (roomId: string): void => {
-  const index = rooms.findIndex((r) => r.id === roomId);
+/**
+ * Closes the room and removes all players of that room
+ * @param room
+ */
+export const closeRoom = (room: Room): void => {
+  const index = rooms.findIndex((r) => r.id === room.id);
   if (index >= 0) {
-    const room = rooms.splice(index, 1)[0];
-
-    // Remove remaining players
-    for (let player of room.players) {
-      removePlayer(player.id);
-    }
+    console.log('[ROOM][CLOSE]', room.id);
+    rooms.splice(index, 1);
   }
 };
