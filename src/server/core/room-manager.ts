@@ -7,7 +7,8 @@ const generateRoomName = (): string => {
     .toString(16)
     .split('')
     .splice(-5)
-    .join('');
+    .join('')
+    .toUpperCase();
 };
 
 /**
