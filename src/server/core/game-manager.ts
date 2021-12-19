@@ -3,8 +3,8 @@ import { Game, Phase, Round } from '../../model/game';
 import { Room } from '../../model/room';
 import { timeouts } from './state';
 
-const SELECTION_TIMEOUT = +(process.env.SELECTION_TIMEOUT ?? 93_000); // 60 seconds
-const GUESSING_TIMEOUT = +(process.env.GUESSING_TIMEOUT ?? 93_000);
+const SELECTION_TIMEOUT = +(process.env.SELECTION_TIMEOUT ?? 93_000); // 90 seconds + 3 grace period
+const GUESSING_TIMEOUT = +(process.env.GUESSING_TIMEOUT ?? 63_000); // 60 seconds + 3 grace period
 
 /**
  * Creates a new game or get an existing one from given room.
@@ -68,26 +68,33 @@ export const canGuess = (room: Room): boolean => {
 };
 
 export const calculateScores = (room: Room): void => {
-  if (!room?.game.round.boxes || !room?.game.round.guesses) {
+  if (room?.game.round.boxes.length === 0) {
+    console.log('[GAME][SCORING] No boxes selected this round');
     return;
   }
 
-  console.log(room.game.round.boxes);
-  console.log(room.game.round.guesses);
+  console.log('[GAME][SCORING][BOX]', room.id, room.game.round.boxes);
+  console.log('[GAME][SCORING][GUESS]',room.id, room.game.round.guesses);
 
   const alreadyGuessed: string[] = [];
 
   const playerBoxes = room.game.round.boxes.map((b) => b.content);
   const playerGuesses = Object.entries(room.game.round.guesses);
 
+  let selectorScore = 0;
+
   for (const [playerId, guesses] of playerGuesses) {
     if (alreadyGuessed.includes(playerId)) {  // Same player cannot vote twice (safety net)
       continue;
     }
 
+    if (guesses.length < playerBoxes.length) { // Invalid length of guesses
+      continue;
+    }
+
     let score = 0;
 
-    for (let i = 0; i < 3; i++) {             // Note: Always 3 boxes
+    for (let i = 0; i < playerBoxes.length; i++) {             // Note: Always 3 boxes
       if (playerBoxes[i] === guesses[i]) {
         score++;
       }
@@ -100,7 +107,15 @@ export const calculateScores = (room: Room): void => {
     room.game.scores[playerId] = (room.game.scores[playerId] ?? 0) + score;
 
     alreadyGuessed.push(playerId);
+
+    selectorScore += score;
+
+    console.log('[GAME][SCORING] Player', playerId, 'scored', score);
   }
+
+  const selectorId = room.game.current.id;
+  room.game.scores[selectorId] = (room.game.scores[selectorId] ?? 0) + selectorScore;
+  console.log('[GAME][SCORING] Selector', selectorId, 'scored', selectorScore);
 };
 
 export const clearSelectionTimeout = (room: Room): void => {
