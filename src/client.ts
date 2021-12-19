@@ -62,15 +62,15 @@ socket.on('gameStarted', (game) => {
       socket.emit('selectBoxes', [
         {
           content: contentPool[0],
-          labels: [{label: labelPool[0], position: {x: 0, y: 0}}, {label: labelPool[1], position: {x: 0, y: 0}}],
+          labels: [labelPool[0], labelPool[1]],
         },
         {
           content: contentPool[1],
-          labels: [{label: labelPool[0], position: {x: 0, y: 0}}, {label: labelPool[1], position: {x: 0, y: 0}}],
+          labels: [labelPool[0], labelPool[1]],
         },
         {
           content: contentPool[2],
-          labels: [{label: labelPool[0], position: {x: 0, y: 0}}, {label: labelPool[1], position: {x: 0, y: 0}}],
+          labels: [labelPool[0], labelPool[1]],
         },
       ]);
     }, 5_000);
@@ -90,23 +90,11 @@ socket.on('guessBoxes', (game) => {
       const {contentPool} = myGame.round;
       const rand = Math.random();
       if (rand < 0.1) {
-        socket.emit('guessBoxes', {
-          playerId, boxes: [
-            contentPool[0], contentPool[1], contentPool[2],
-          ],
-        });
+        socket.emit('guessBoxes', [contentPool[0], contentPool[1], contentPool[2]]);
       } else if (rand < 0.6) {
-        socket.emit('guessBoxes', {
-          playerId, boxes: [
-            contentPool[3], contentPool[4], contentPool[2],
-          ],
-        });
+        socket.emit('guessBoxes', [contentPool[3], contentPool[4], contentPool[2]]);
       } else {
-        socket.emit('guessBoxes', {
-          playerId, boxes: [
-            contentPool[0], contentPool[4], contentPool[2],
-          ],
-        });
+        socket.emit('guessBoxes', [contentPool[0], contentPool[4], contentPool[2]]);
       }
     }, timeout);
   }

@@ -1,4 +1,4 @@
-import { Box, Game, Guess } from './model/game';
+import { Box, Game } from './model/game';
 import { Room } from './model/room';
 
 export interface ServerToClientEvents {
@@ -44,7 +44,7 @@ export interface ClientToServerEvents {
   selectBoxes: (boxes: Box[]) => void;
 
   // Guessing Phase
-  guessBoxes: (guesses: Guess) => void;
+  guessBoxes: (guesses: string[]) => void;
 
   // Scoring Phase
 

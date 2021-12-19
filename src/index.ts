@@ -162,10 +162,10 @@ io.on('connection', (socket) => {
     }
 
     if (canGuess(room)) {
-      console.log('[GAME][GUESS]', room.id, player.name);
-      room.game.round.guesses.push(guess);
+      console.log('[GAME][GUESS]', room.id, player.name, guess);
+      room.game.round.guesses[player.id] = guess;
 
-      const alreadyGuessed = room.game.round.guesses.length;
+      const alreadyGuessed = Object.keys(room.game.round.guesses).length;
       const maxGuesses = room.players.length - 1;               // -1 for active player
 
       console.log('already guessed', alreadyGuessed);

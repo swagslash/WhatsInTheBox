@@ -46,7 +46,7 @@ const createRound = (): Round => {
     boxes: [],
     contentPool: emojis.splice(0, 5), // Items that can be placed in boxes
     labelPool: emojis,                                // Labels that can be assigned to boxes
-    guesses: [],
+    guesses: {},
   };
 };
 
@@ -68,18 +68,27 @@ export const canGuess = (room: Room): boolean => {
 };
 
 export const calculateScores = (room: Room): void => {
-  if (!room.game.round.boxes || !room.game.round.guesses) {
+  if (!room?.game.round.boxes || !room?.game.round.guesses) {
     return;
   }
 
-  const playerBoxes = room.game.round.boxes.map((b) => b.content);
-  const guesses = room.game.round.guesses;
+  console.log(room.game.round.boxes);
+  console.log(room.game.round.guesses);
 
-  for (const { playerId, boxes } of guesses) {
+  const alreadyGuessed: string[] = [];
+
+  const playerBoxes = room.game.round.boxes.map((b) => b.content);
+  const playerGuesses = Object.entries(room.game.round.guesses);
+
+  for (const [playerId, guesses] of playerGuesses) {
+    if (alreadyGuessed.includes(playerId)) {  // Same player cannot vote twice (safety net)
+      continue;
+    }
+
     let score = 0;
 
     for (let i = 0; i < 3; i++) {             // Note: Always 3 boxes
-      if (playerBoxes[i] === boxes[i]) {
+      if (playerBoxes[i] === guesses[i]) {
         score++;
       }
     }
@@ -89,6 +98,8 @@ export const calculateScores = (room: Room): void => {
     }
 
     room.game.scores[playerId] = (room.game.scores[playerId] ?? 0) + score;
+
+    alreadyGuessed.push(playerId);
   }
 };
 
