@@ -29,8 +29,7 @@ import {
 } from './server/core/room-manager';
 import {SocketData} from './socket-data';
 import {ClientToServerEvents, ServerToClientEvents, ServerToServerEvents} from './socket-types';
-
-import fs from "fs";
+const fs = require('fs');
 
 const SERVER_PORT = +(process.env.SERVER_PORT ?? 3_000);
 
