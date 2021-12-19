@@ -3,8 +3,8 @@ import { Game, Phase, Round } from '../../model/game';
 import { Room } from '../../model/room';
 import { timeouts } from './state';
 
-const SELECTION_TIMEOUT = +(process.env.SELECTION_TIMEOUT ?? 60_000); // 60 seconds
-const GUESSING_TIMEOUT = +(process.env.GUESSING_TIMEOUT ?? 60_000);
+const SELECTION_TIMEOUT = +(process.env.SELECTION_TIMEOUT ?? 93_000); // 60 seconds
+const GUESSING_TIMEOUT = +(process.env.GUESSING_TIMEOUT ?? 93_000);
 
 /**
  * Creates a new game or get an existing one from given room.
