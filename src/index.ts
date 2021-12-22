@@ -31,7 +31,7 @@ const app = express();
 const server = http.createServer(app);
 
 const start = async () => {
-  server.listen(3000, () => {
+  server.listen(SERVER_PORT, () => {
     console.log('Listening at port ', SERVER_PORT);
   });
 };
