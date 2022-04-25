@@ -1,5 +1,5 @@
 import * as express from 'express';
-import * as http from 'http';
+import * as https from 'https';
 import { Server } from 'socket.io';
 import { Phase } from './model/game';
 import { Player } from './model/player';
@@ -25,10 +25,15 @@ import {
 import { SocketData } from './socket-data';
 import { ClientToServerEvents, ServerToClientEvents, ServerToServerEvents } from './socket-types';
 
-const SERVER_PORT = +(process.env.SERVER_PORT ?? 3_000);
+const SERVER_PORT = +(process.env.SERVER_PORT ?? 5_000);
+
+const fs = require('fs');
 
 const app = express();
-const server = http.createServer(app);
+const server = https.createServer({
+  key: fs.readFileSync("/etc/letsencrypt/live/box.swagslash.io/privkey.pem"),
+  cert: fs.readFileSync("/etc/letsencrypt/live/box.swagslash.io/cert.pem")
+}, app);
 
 const start = async () => {
   server.listen(SERVER_PORT, () => {
